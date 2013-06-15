@@ -1,19 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright © 2013 EAzama <eazama001@gmail.com>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
 
-/*
- * SkypeBotUI.java
- *
- * Created on May 11, 2012, 12:46:52 AM
- */
 package com.skype.bot;
 
-/**
- *
- * @author ericazama
- */
 public class SkypeBotUI extends javax.swing.JFrame {
 
     /**
