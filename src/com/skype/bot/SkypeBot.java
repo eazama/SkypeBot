@@ -7,12 +7,13 @@ import com.skype.bot.user.*;
 import java.util.*;
 import java.util.logging.*;
 
+/*
+ * Main Class
+ */
 public class SkypeBot {
 
     public static final Logger logger = Logger.getLogger(SkypeBot.class.getName());
-    /**
-     * @param args the command line arguments
-     */
+    
     private static Random rand = new Random();
 
     public static Random getRand() {
