@@ -12,6 +12,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 
+
+/*
+ * Base class for event queues. Holds a list of events and checks messages that
+ * are passed to it from the AbstractBotEventListener object containing it.
+ * If the message starts with the 
+ */
 public abstract class AbstractEventQueue extends LinkedBlockingQueue<ChatMessage> implements Runnable {
 
     private static final Logger logger = Logger.getLogger(AbstractEventQueue.class.getName());
@@ -21,22 +27,34 @@ public abstract class AbstractEventQueue extends LinkedBlockingQueue<ChatMessage
     protected TreeSet<Integer> processedIDs = new TreeSet<Integer>();
     protected EventList eList;
 
+    /*
+     * Constructor. Initializes the object with a list of commands to check
+     * against when processing messages
+     */
     public AbstractEventQueue(EventList nList) {
         eList = nList;
     }
 
+    /*
+     * Infinite loop that processes messages as they are queued up by an 
+     * AbstractBotEventListener class. 
+     */
     @Override
     public final void run() {
         while (doLoop) {
+            //Checks if next message in queue is valid
             if (nextMsg()) {
                 try {
+                    //if so processes it
                     processMessage(eventMsg);
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
-                logger.log(Level.INFO, "{0}: {1} processed",
-                        new Object[]{eventType(), eventMsg.getId()});
+                //logger.log(Level.FINEST, "{0}: {1} processed",
+                //        new Object[]{eventType(), eventMsg.getId()});
+                //Adds the message ID to the list of prosessed IDs
                 processedIDs.add(Integer.parseInt(eventMsg.getId()));
+                //Trim the list of IDs if greater than 50
                 if (processedIDs.size() > 50) {
                     reduceIDs();
                 }
@@ -44,38 +62,49 @@ public abstract class AbstractEventQueue extends LinkedBlockingQueue<ChatMessage
         }
     }
 
+    /*
+     * Launches a new thread to process the message
+     */
     protected void processMessage(ChatMessage msg) {
-        try {
-            new eventThread(msg).start();
-        } catch (Exception ex) {
-        }
+        new eventThread(msg).start();
     }
 
+    /*
+     * Ends the loop in run() and allows the queue to shut down.
+     */
     public final void stop() {
         doLoop = false;
     }
 
+    /*
+     * Waits for a new chat message and determines if it has been processed already
+     */
     private boolean nextMsg() {
         try {
             eventMsg = take();
         } catch (InterruptedException ex) {
-            logger.log(Level.SEVERE, "Error in AbstractEventQueue.nextMsg()", ex);
+            logger.log(Level.SEVERE, "InterruptedException in AbstractEventQueue.nextMsg()", ex);
             return false;
         }
+        //Rejects if the message is older than the last 50 queued messages
         if (Integer.parseInt(eventMsg.getId()) <= lastID) {
             logger.log(Level.FINEST, "{0}: {1} rejected - {2}",
                     new Object[]{eventType(), eventMsg.getId(), lastID});
             return false;
         }
+        //Rejects if the message has the same ID as one of the last 50 queued messages
         if (processedIDs.contains(Integer.parseInt(eventMsg.getId()))) {
             logger.log(Level.FINEST, "{0}: {1} rejected - ID Processed",
                     new Object[]{eventType(), eventMsg.getId()});
             return false;
         }
         return true;
-
     }
 
+    /*
+     * Removes items from the TreeSet of previously queued items. Also sets
+     * the cutoff ID for oldest allowable message
+     */
     private void reduceIDs() {
         int i = lastID;
         while (processedIDs.size() > 25) {
@@ -85,10 +114,12 @@ public abstract class AbstractEventQueue extends LinkedBlockingQueue<ChatMessage
         }
     }
 
+    //String to allow an Event Queue to identify itself in log messages
     public abstract String eventType();
 
-    public abstract boolean validMsg(ChatMessage msg);
-
+    /*
+     * Thread class to independently handle messages
+     */
     private class eventThread extends Thread {
 
         ChatMessage msg;

@@ -8,23 +8,22 @@ package com.skype.bot;
 
 import com.skype.*;
 
+/*
+ * Queue for admin commands.
+ * May remove in the future and implement in the SkypeBot class
+ */
 public final class AdminQueue extends AbstractEventQueue {
 
+    /*
+     * Constructor. Creates the queue using the list of Admin Commands registered in the bot
+     */
     public AdminQueue() {
         super(SkypeBot.getAdminList());
     }
 
-    @Override
-    public boolean validMsg(ChatMessage msg) {
-        try {
-            String msgtxt = msg.getContent();
-            System.out.println("valid admin command");
-            return msgtxt.startsWith(SkypeBot.AdminTrigger());
-        } catch (Exception ex) {
-        }
-        return false;
-    }
-
+    /*
+     * ID string for log files
+     */
     @Override
     public String eventType() {
         return "Admin Event";

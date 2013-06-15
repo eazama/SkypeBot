@@ -8,24 +8,22 @@ package com.skype.bot;
 
 import com.skype.*;
 
+/*
+ * Event queue for public commands.
+ * May remove in the future and implement in SkypeBot class
+ */
 public final class EventQueue extends AbstractEventQueue {
 
+    /*
+     * Constructor. Creates the queue using the list of Public Commands registered in the bot
+     */
     public EventQueue() {
         super(SkypeBot.getEventList());
     }
 
-    @Override
-    public boolean validMsg(ChatMessage msg) {
-        try {
-            String msgtxt = msg.getContent();
-            return msgtxt.startsWith(SkypeBot.CommandTrigger());
-        } catch (Exception ex) {
-        }
-        return false;
-    }
-
-
-
+    /*
+     * ID sting for logs
+     */
     @Override
     public String eventType() {
         return "Core Event";
