@@ -1,5 +1,3 @@
-
-
 package com.skype.bot;
 
 import com.skype.*;
@@ -98,24 +96,71 @@ public class SkypeBot {
 
     }
 
-    public static void addRecordModule(Class<? extends UserRecordModule> nClass) {
-        logger.log(Level.INFO, "Record Module Added: {0}", nClass.getName());
-        recordModuleClasses.add(nClass);
+    /*
+     * Registers a new save data module for users
+     * 
+     * @param nClass - the save data module to be added. Must extend UserRecordModule.
+     * returns true if the module was successfully registered, false otherwise
+     */
+    public static boolean addRecordModule(Class<? extends UserRecordModule> nClass) {
+        if (recordModuleClasses.add(nClass)) {
+            logger.log(Level.INFO, "Record Module Added: {0}", nClass.getName());
+            return true;
+        } else {
+            logger.log(Level.INFO, "Error adding RecordModule: "
+                    + nClass.getName() + "\nPlease check for record name conflicts");
+            return false;
+        }
     }
 
-    public static void addEventModule(EventModule nClass) {
-        logger.log(Level.INFO, "Event Added: {0}", nClass.getName());
-        eventList.add(nClass);
+    /*
+     * Registers a new public event module
+     * 
+     * @param nClass - the event module to be added.
+     * returns true if the module was successfully registered, false otherwise
+     */
+    public static boolean addEventModule(EventModule nClass) {
+        if (eventList.add(nClass)) {
+            logger.log(Level.INFO, "Event Added: {0}", nClass.getName());
+            return true;
+        } else {
+            logger.log(Level.INFO, "Error adding EventModule: "
+                    + nClass.getName() + "\nPlease check for command name conflicts");
+            return false;
+        }
     }
 
-    public static void addAdminModule(EventModule nClass) {
-        logger.log(Level.INFO, "Event Added: {0}", nClass.getName());
-        adminList.add(nClass);
+    /*
+     * Registers a new admin-only event module
+     * 
+     * @param nClass - the event module to be added.
+     * returns true if the module was successfully registered, false otherwise
+     */
+    public static boolean addAdminModule(EventModule nClass) {
+        if (adminList.add(nClass)) {
+            logger.log(Level.INFO, "Admin Event Added: {0}", nClass.getName());
+            return true;
+        } else {
+            logger.log(Level.INFO, "Error adding AdminModule: "
+                    + nClass.getName() + "\nPlease check for command name conflicts");
+            return false;
+        }
     }
 
-    public static void addUserTimer(String nTimer) {
+    /*
+     * Registers a new timer module
+     * 
+     * @param nTimer - the name of the timer to be added
+     * returns true if timer was added successfully, false otherwise
+     */
+    public static boolean addUserTimer(String nTimer) {
         if (userTimers.add(nTimer)) {
             logger.log(Level.INFO, "Timer Added: {0}", nTimer);
+            return true;
+        } else {
+            logger.log(Level.INFO, "Error adding Timer: "
+                    + nTimer + "\nPlease check for timer name conflicts");
+            return false;
         }
     }
 
